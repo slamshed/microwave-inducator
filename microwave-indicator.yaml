@@ -1,68 +1,54 @@
-# Microwave Indicator – Blueprint Inputs
-
-This file describes the inputs required for the Microwave Indicator blueprint in Home Assistant.
-
-## Inputs
-
-### 1. Power Sensor (`power_sensor`)
-**Type:** entity  
-**Required:** Yes  
-**Description:**  
-The power sensor that measures the microwave’s power usage in watts.  
-**Example:** `sensor.ikea_of_sweden_inspelning_smart_plug_power_4`
-
----
-
-### 2. Red Indicator (`red_entity`)
-**Type:** entity (switch or light)  
-**Required:** Yes  
-**Description:**  
-This is the entity that turns **on** while the microwave is actively cooking.  
-**Example:** `switch.shelly_plus_1_1_switch_0`
-
----
-
-### 3. Green Indicator (`green_entity`)
-**Type:** entity (switch or light)  
-**Required:** Yes  
-**Description:**  
-This is the entity that turns **on** after the microwave finishes and stays on for the configured duration.  
-**Example:** `switch.shelly_plus_1_4_switch_0`
-
----
-
-### 4. On Threshold (`on_threshold`)
-**Type:** number (float or integer)  
-**Required:** Yes  
-**Description:**  
-The wattage level above which the microwave is considered “on.”  
-**Example:** `10`
-
----
-
-### 5. Off Threshold (`off_threshold`)
-**Type:** number (float or integer)  
-**Required:** Yes  
-**Description:**  
-The wattage level below which the microwave is considered “off.”  
-**Example:** `10`
-
----
-
-### 6. Green On Duration (`green_on_duration`)
-**Type:** number (integer, seconds)  
-**Required:** Yes  
-**Description:**  
-How long the green indicator should stay on after cooking ends.  
-**Example:** `60`
-
----
-
-### Notes
-
-- On and off thresholds should be selected to suit your microwave's idle and active wattage. A good rule of thumb is:
-  - `on_threshold` = 10 W (or slightly above idle)
-  - `off_threshold` = same or slightly lower than `on_threshold`
-- If your microwave drops to 0W between cooking stages, consider using a short delay before transitioning to green.
-
----
+blueprint:
+  name: Microwave Indicator
+  description: >
+    Shows a red light when microwave is cooking and green light when done.
+  domain: automation
+  input:
+    power_sensor:
+      name: Power Sensor
+      description: The power sensor that measures the microwave’s power usage in watts.
+      selector:
+        entity:
+          domain: sensor
+    red_entity:
+      name: Red Indicator
+      description: Entity (light or switch) that turns on while cooking.
+      selector:
+        entity:
+          domain: [light, switch]
+    green_entity:
+      name: Green Indicator
+      description: Entity (light or switch) that turns on when cooking ends.
+      selector:
+        entity:
+          domain: [light, switch]
+    on_threshold:
+      name: On Threshold
+      description: Wattage above which microwave is considered “on”.
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 3000
+          unit_of_measurement: W
+          mode: box
+    off_threshold:
+      name: Off Threshold
+      description: Wattage below which microwave is considered “off”.
+      default: 10
+      selector:
+        number:
+          min: 0
+          max: 3000
+          unit_of_measurement: W
+          mode: box
+    green_on_duration:
+      name: Green On Duration
+      description: How long the green indicator stays on after cooking ends.
+      default: 60
+      selector:
+        number:
+          min: 5
+          max: 300
+          unit_of_measurement: seconds
+          mode: box
